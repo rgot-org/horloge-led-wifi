@@ -191,14 +191,25 @@ L'horloge est prévue pour un lieu public, sur un réseau Wi-Fi public.
 - [VS Code](https://code.visualstudio.com/) + extension **PlatformIO**.
 - Python 3 (pour le script et la génération de clé), facultatif : `pip install paho-mqtt cryptography`.
 
-### Configuration : `src/config.h`
+### Secrets : `src/secrets.h` (à créer)
+
+Ce fichier n'est **pas** dans le dépôt Git (il est exclu par `.gitignore`). Après avoir récupéré le projet :
+
+1. Copier `src/secrets.example.h` en `src/secrets.h`.
+2. Y renseigner :
 
 | Réglage | Rôle |
 | --- | --- |
 | `DEFAULT_SSID`, `PASS` | Wi-Fi utilisé tant qu'aucun réseau n'a été réglé par Bluetooth. |
-| `OWM_API_KEY`, `OWM_CITY` | Clé [OpenWeatherMap](https://openweathermap.org/) (gratuite) et ville par défaut. |
-| `TIMEZONE` | Fuseau horaire au format POSIX (heure d'été comprise). |
+| `OWM_API_KEY` | Clé [OpenWeatherMap](https://openweathermap.org/) (gratuite). |
 | `MQTT_SECRET` | **Clé secrète** de la télécommande (au moins 16 caractères, sinon la commande à distance est désactivée). |
+
+### Configuration : `src/config.h`
+
+| Réglage | Rôle |
+| --- | --- |
+| `OWM_CITY` | Ville par défaut de la météo. |
+| `TIMEZONE` | Fuseau horaire au format POSIX (heure d'été comprise). |
 | `MQTT_DEVICE_ID` | Identifiant de l'horloge ; vide = tiré de l'adresse MAC (affiché au démarrage). |
 | `PROV_NAME`, `PROV_POP` | Nom et code PIN du réglage Bluetooth. |
 | `PANEL_FIRST_AT_TOP`, `PANEL_FLIP_MASK` | Câblage des panneaux (sens de la chaîne, panneaux retournés). |
@@ -225,7 +236,7 @@ Au démarrage, le moniteur série affiche notamment : l'heure lue dans la RTC, l
 powershell -ExecutionPolicy Bypass -File tools\make_setup.ps1 -DeviceId <identifiant> -Out dist\setup.exe
 ```
 
-La clé est lue directement dans `config.h`. Le fichier produit (`dist\setup.exe`, environ 300 Ko) contient la page pré-configurée, la bibliothèque MQTT et l'icône. **Refaire le setup** après chaque modification de `tools/horloge_ihm.html` ou changement de clé. Le dossier `dist/` contient la clé : ne pas le partager.
+La clé est lue directement dans `src/secrets.h`. Le fichier produit (`dist\setup.exe`, environ 300 Ko) contient la page pré-configurée, la bibliothèque MQTT et l'icône. **Refaire le setup** après chaque modification de `tools/horloge_ihm.html` ou changement de clé. Le dossier `dist/` contient la clé : ne pas le partager.
 
 ### Limites connues
 
@@ -241,6 +252,7 @@ La clé est lue directement dans `config.h`. Le fichier produit (`dist\setup.exe
 src/                    Firmware
   main.cpp              Démarrage et boucle principale (affichage, météo, MQTT)
   config.h              Tous les réglages de compilation
+  secrets.example.h     Modèle des secrets (à copier en secrets.h, exclu de Git)
   display.*             Écran virtuel 64×96 sur les 3 panneaux
   screens.*             Dessin des 3 panneaux, QR codes, message défilant
   weather_icons.*       Icônes météo
